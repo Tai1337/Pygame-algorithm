@@ -1,4 +1,3 @@
-# main.py
 
 import pygame
 import csv
@@ -157,7 +156,7 @@ def main():
     point_manager = PointManager(entity_data, TILE_SIZE)
     path_finder = PathFinder(floor_block_data, TILE_SIZE, ui_manager, player)
 
-    eight_puzzle_minigame = EightPuzzleGame(SCREEN_WIDTH, SCREEN_HEIGHT)
+    eight_puzzle_minigame = EightPuzzleGame(SCREEN_WIDTH, SCREEN_HEIGHT, ui_manager, player)
     current_game_state = ST_PLAYING_MAIN
     points_to_collect_value = 0
 
@@ -277,7 +276,7 @@ def main():
 
 
         ui_manager.update(time_delta)
-
+        money_label.set_text(f"Tiền: {player.money}")
         # --- Vẽ màn hình ---
         screen.fill((0,0,0))
         background_rect = background_img_full.get_rect(topleft=(0,0))
