@@ -16,6 +16,7 @@ from src.minigames.eight_puzzle_game import EightPuzzleGame
 from src.minigames.snake_game import SnakeGame
 from src.minigames.mouse_cheese_game import MouseCheeseGame
 from src.minigames.caro_game import CaroGame
+from src.minigames.sudoku_game import SudokuGame
 from src.ui.minigame_selector_ui import MinigameSelectorUI
 
 class Game:
@@ -40,7 +41,7 @@ class Game:
         self.training_input_confirm_button = None
         self.training_input_message_label = None
         
-        self.pending_minigame = None  # Lưu minigame chờ khi nhập số lượt huấn luyện
+        self.pending_minigame = None
         
         self._reset_game_state_and_entities()
         print("Game initialized and ready.")
@@ -149,7 +150,8 @@ class Game:
         snake_game = SnakeGame(config.SCREEN_WIDTH, config.SCREEN_HEIGHT, self.ui_manager)
         maze_game = MouseCheeseGame(config.SCREEN_WIDTH, config.SCREEN_HEIGHT, self.ui_manager)
         caro_game = CaroGame(config.SCREEN_WIDTH, config.SCREEN_HEIGHT, self.ui_manager)
-        self.all_minigame_instances = [eight_puzzle, snake_game, maze_game, caro_game]
+        sudoku_game = SudokuGame(config.SCREEN_WIDTH, config.SCREEN_HEIGHT, self.ui_manager)
+        self.all_minigame_instances = [eight_puzzle, snake_game, maze_game, caro_game, sudoku_game]
         self.point_to_minigame_map = {}
         self.current_minigame_pool_index = 0
 
@@ -395,11 +397,12 @@ class Game:
                 self.player.collect_item(config.POINT_COLLECT_VALUE)
                 additional_reward = config.MAZE_GAME_WIN_REWARD_MAIN if isinstance(self.current_minigame_instance, MouseCheeseGame) else config.MINIGAME_WIN_REWARD
                 self.player.money += additional_reward
-                self._set_status_message(f"Hoàn thành {minigame_display_name}! Thưởng: +{config.POINT_COLLECT_VALUE + additional_reward} tiền.", 4)
+                self._set_status_message(f"Hoàn thành {minigame_display_name}! Thưởng: +{config.POINT_COLLECT_VALUE + additional_reward} tiền.", 3)
+                self.point_manager.finalize_collection()
             else:
                 self.player.items_collected_count += 1
                 self._set_status_message(f"AI đã hoàn thành {minigame_display_name}!", 3)
-            self.point_manager.finalize_collection()
+                self.point_manager.finalize_collection()
         else:
             if isinstance(self.current_minigame_instance, MouseCheeseGame) and not was_cancelled_by_esc:
                 self.current_game_state = config.ST_ENTERING_TRAINING_EPISODES
