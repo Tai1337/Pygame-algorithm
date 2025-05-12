@@ -1,7 +1,6 @@
 import os
 import pygame
 
-# --- Hàm trợ giúp để lấy đường dẫn tài sản ---
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 ASSETS_DIR = os.path.join(PROJECT_ROOT, 'assets')
 
@@ -20,30 +19,30 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (100, 100, 255)
-YELLOW = (255, 255, 0)
 TEXT_COLOR = BLACK
 PUZZLE_BG_COLOR = (50, 50, 50, 200)
+GRAY = (200, 200, 200)
 
 # --- Đường dẫn tệp tài sản ---
 MAP_IMAGE_PATH = get_asset_path("images/map.png")
 PLAYER_IMAGE_BASE_PATH = get_asset_path("images/character")
 POINT_IMAGE_PATH = get_asset_path("images/poin.png")
+
 FLOOR_BLOCK_CSV_PATH = get_asset_path("maps_data/map_floorblock.csv")
 ENTITY_CSV_PATH = get_asset_path("maps_data/map_Entity.csv")
 Q_TABLE_TRAINED_PATH = get_asset_path("q_tables/q_table_trained.json")
+MAZE_Q_TABLE_CSV_PATH = get_asset_path("q_tables/maze_q_table.csv")
 THEME_FILE_PATH = get_asset_path("ui_themes/theme.json")
 
 # --- Trạng thái Game ---
 ST_PLAYING_MAIN = "playing_main"
 ST_PLAYING_PUZZLE = "playing_puzzle"
-ST_PLAYING_CARO = "playing_caro"
-ST_PLAYING_MOUSE_CHEESE = "playing_mouse_cheese"  # Thêm trạng thái cho MouseCheeseGame
 ST_CHOOSING_MINIGAME = "choosing_minigame"
-ST_INPUT_MOUSE_CHEESE_TRAIN = "input_mouse_cheese_train"  # Trạng thái nhập số lần train
+ST_ENTERING_TRAINING_EPISODES = "entering_training_episodes"
 
 # --- Hằng số cho Player ---
 PLAYER_DEFAULT_SPEED = 4
-INITIAL_PLAYER_MONEY = 500
+INITIAL_PLAYER_MONEY = 100
 PLAYER_ENTITY_ID = '100'
 
 # --- Hằng số cho PointManager ---
@@ -66,26 +65,60 @@ BACKTRACKING_MAX_CALLS_FACTOR = 5
 
 # --- Tiền tính taxi ---
 TAXI_BASE_FARE = 5
-TAXI_COST_PER_VISITED_NODE = 0.05
-TAXI_COST_PER_MOVE = 0.5
+TAXI_COST_PER_VISITED_NODE = 0.01
+TAXI_COST_PER_MOVE = 0.05
 TAXI_MIN_FARE_IF_PATH_FOUND = 10
 
-# --- Cài đặt Game Caro ---
-CARO_BOARD_SIZE = 10
+MINIGAME_WIN_REWARD = 20
+POINT_COLLECT_VALUE = 25
+MINIGAME_LOSE_PENALTY = -10
+
+# --- Hằng số cho Game Chính ---
+TARGET_ITEMS_TO_WIN = 4
+MAIN_GAME_TIME_LIMIT_SECONDS = 300
+
+SOLVE_AI_BUTTON_WIDTH = 200
+SOLVE_AI_BUTTON_HEIGHT = 40
+SOLVE_AI_BUTTON_MARGIN_TOP = 10
+PUZZLE_SOLVE_COST = 30
+SOLVE_AI_BUTTON_TEXT = "Bỏ qua trò chơi (Trừ {cost} tiền)"
+AI_SOLVED_DEDUCTION_MESSAGE = "Đã bỏ qua trò chơi, trừ {cost} tiền"
+
+# Hằng số cho việc AI giải từng bước
+AI_PUZZLE_SOLVE_STEP_DURATION = 0.4
+PUZZLE_EVENT_AI_SOLVE_REQUEST = pygame.USEREVENT + 10
+PUZZLE_AI_UCS_MAX_EXPLORE_NODES = 700000
+
+# --- Hằng số cho Game Rắn Săn Mồi ---
+SNAKE_CELL_SIZE = 20
+SNAKE_GRID_WIDTH = 25
+SNAKE_GRID_HEIGHT = 20
+SNAKE_INITIAL_LENGTH = 3
+SNAKE_POINTS_TO_WIN = 5
+SNAKE_PLAYER_MOVE_INTERVAL = 0.1
+SNAKE_COLLISION_COST = 10
+SNAKE_COLOR = (34, 177, 76)
+SNAKE_HEAD_COLOR = (0, 128, 0)
+FOOD_COLOR = (237, 28, 36)
+SNAKE_GAME_AREA_BG_COLOR = (30, 30, 30)
+SNAKE_GRID_LINE_COLOR = (50, 50, 50)
+
+# --- Hằng số cho Game Caro ---
+CARO_BOARD_SIZE = 15
 CARO_WIN_LENGTH = 5
-CARO_TILE_SIZE = 40
+CARO_TILE_SIZE = 30
 CARO_FONT_SIZE = 30
-CARO_MESSAGE_FONT_SIZE = 36
-CARO_MARK_THICKNESS = 4
+CARO_MESSAGE_FONT_SIZE = 30
+CARO_OVERLAY_COLOR = (30, 30, 30, 200)
+CARO_BOARD_BG_COLOR = (50, 50, 50)
+CARO_GRID_LINE_COLOR = (100, 100, 100)
+CARO_X_COLOR = (255, 100, 100)
+CARO_O_COLOR = (100, 100, 255)
+CARO_WIN_LINE_COLOR = (255, 255, 0)
 CARO_WIN_LINE_THICKNESS = 5
-CARO_BOARD_BG_COLOR = (200, 200, 200)
-CARO_GRID_LINE_COLOR = BLACK
-CARO_X_COLOR = BLUE
-CARO_O_COLOR = RED
-CARO_WIN_LINE_COLOR = GREEN
-CARO_OVERLAY_COLOR = (0, 0, 0, 150)
+CARO_MARK_THICKNESS = 4
 DEFAULT_CARO_AI = 'minimax'
-CARO_MINIMAX_DEPTH = 3
+CARO_MINIMAX_DEPTH = 2
 CARO_BEAM_WIDTH = 3
 CARO_BEAM_DEPTH = 2
 CARO_QL_LEARNING_RATE = 0.1
@@ -93,33 +126,59 @@ CARO_QL_DISCOUNT_FACTOR = 0.9
 CARO_QL_EXPLORATION_RATE = 0.1
 CARO_REWARD_WIN = 100
 CARO_REWARD_LOSS = -100
-CARO_REWARD_DRAW = 10
+CARO_REWARD_DRAW = 0
 CARO_REWARD_MOVE = -1
 
-# --- Cài đặt MouseCheeseGame ---
-MOUSE_CHEESE_COST_PER_TRAIN = 5  # Chi phí mỗi lần train
-MOUSE_CHEESE_REWARD = 35  # Thưởng khi thắng (đã có trong mouse_cheese_game.py)
-MOUSE_CHEESE_MAX_TRAIN = 10  # Giới hạn số lần train tối đa
+# --- Hằng số cho Game Chuột và Phô Mát ---
+MAZE_CELL_SIZE = 40
+DEFAULT_MAZE_LAYOUT = [
+    [0, 1, 0, 0, 0],
+    [0, 1, 0, 1, 0],
+    [0, 0, 0, 1, 0],
+    [0, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0]
+]
+MAZE_INITIAL_CHEESE_POSITIONS = frozenset([(0, 4), (4, 4)])
+MAZE_START_POS = (0, 0)
+MAZE_TARGET_CHEESE_COUNT = 2
+MOUSE_IMAGE_PATH = get_asset_path("images/character/mouse.png")
+CHEESE_IMAGE_PATH = get_asset_path("images/character/cheese.png")
+MAZE_QL_LEARNING_RATE = 0.1
+MAZE_QL_DISCOUNT_FACTOR = 0.95
+MAZE_QL_EPSILON_START = 1.0
+MAZE_QL_EPSILON_END = 0.05
+MAZE_QL_EPSILON_DECAY_RATE = 0.9995
+MAZE_QL_INITIAL_Q_VALUE = 0.0
+MAZE_REWARD_STEP = -0.1
+MAZE_REWARD_WALL = -2.0
+MAZE_REWARD_CHEESE = 20.0
+MAZE_REWARD_WIN_ALL_CHEESE = 60.0
+MAZE_MAX_STEPS_FACTOR = 1.2
+MAZE_GAME_WIN_REWARD_MAIN = 20
+MAZE_PATH_COLOR = (0, 200, 0)
+MAZE_FONT_SIZE = 24
+MAZE_TRAINING_COST_PER_EPISODE = 1
+MAZE_TRAINING_PROMPT = "Nhập số lượt huấn luyện cho AI (1 lượt = 1 tiền):"
+MAZE_INSUFFICIENT_MONEY_MESSAGE = "Không đủ tiền cho số lượt huấn luyện này!"
+MAZE_INVALID_EPISODES_MESSAGE = "Vui lòng nhập một số nguyên dương."
+MAZE_RETRY_TRAINING_MESSAGE = "AI không ăn đủ phô mai. Nhập thêm lượt huấn luyện:"
+MAZE_MOUSE_MOVE_INTERVAL = 0.2  # Khoảng thời gian giữa các bước di chuyển của chuột (giây)
 
-# --- UI IDs cho lựa chọn Minigame ---
-MINIGAME_CHOICE_WINDOW_TITLE = "Chọn Minigame"
-CHOOSE_8PUZZLE_BUTTON_ID = "#choose_8puzzle_button"
-CHOOSE_CARO_BUTTON_ID = "#choose_caro_button"
-CHOOSE_MOUSE_CHEESE_BUTTON_ID = "#choose_mouse_cheese_button"  # ID cho nút MouseCheeseGame
-MOUSE_CHEESE_TRAIN_WINDOW_TITLE = "Nhập số lần chơi MouseCheese"
-MOUSE_CHEESE_TRAIN_INPUT_ID = "#mouse_cheese_train_input"
-MOUSE_CHEESE_CONFIRM_BUTTON_ID = "#mouse_cheese_confirm_button"
-MOUSE_CHEESE_CANCEL_BUTTON_ID = "#mouse_cheese_cancel_button"
+# --- Hằng số cho Cửa sổ Chọn Mini-game ---
+MINIGAME_SELECTION_WINDOW_TITLE = "Chọn Minigame"
+MINIGAME_SELECTION_PROMPT = "Chọn một Minigame để chơi:"
+MINIGAME_SELECTION_WINDOW_WIDTH = 400
+MINIGAME_SELECTION_WINDOW_HEIGHT = 300
+MINIGAME_SELECTION_BUTTON_HEIGHT = 50
+MINIGAME_SELECTION_BUTTON_MARGIN = 10
+MINIGAME_DISPLAY_NAMES = {
+    "EightPuzzleGame": "8-Puzzle",
+    "SnakeGame": "Rắn Săn Mồi",
+    "MazeGame": "Chuột và Phô Mát",
+    "CaroGame": "Cờ Caro"
+}
 
-# --- Hằng số cho 8-Puzzle Game ---
-PUZZLE_GRID_SIZE = 3
-PUZZLE_TILE_SIZE = 80
-PUZZLE_GAP = 5
-PUZZLE_BORDER = 10
-PUZZLE_SOLVE_COST = 50  # Chi phí để AI giải puzzle
-PUZZLE_EVENT_AI_SOLVE_REQUEST = "puzzle_ai_solve_request" # Event ID khi yêu cầu AI giải
-SOLVE_AI_BUTTON_WIDTH = 180
-SOLVE_AI_BUTTON_HEIGHT = 40   # Hằng số gây lỗi nếu thiếu
-SOLVE_AI_BUTTON_MARGIN_TOP = 20 # Khoảng cách từ puzzle xuống nút. Hằng số này cũng cần có.
-SOLVE_AI_BUTTON_TEXT = f"Giải bằng AI ({PUZZLE_SOLVE_COST} tiền)"
-AI_PUZZLE_SOLVE_STEP_DURATION = 0.3
+# --- Trạng thái Game (bổ sung) ---
+ST_PLAYER_WON = "PLAYER_WON"
+ST_GAME_OVER_TIME = "GAME_OVER_TIME"
+ST_GAME_OVER_MONEY = "GAME_OVER_MONEY"

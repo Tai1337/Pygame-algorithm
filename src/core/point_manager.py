@@ -28,6 +28,19 @@ class PointManager:
         else:
              self.spawn_new_point()
 
+    def reset(self, entity_data):
+        print("Resetting PointManager...")
+        self.spawn_points_pixels = []
+        self._find_spawn_points(entity_data) # Tìm lại các điểm spawn
+        self.is_visible = False
+        self.current_point_rect = None
+        self.current_point_center = None
+        self.collected_point_for_puzzle_center = None
+        if not self.spawn_points_pixels:
+            print(f"Cảnh báo (reset): Không tìm thấy vị trí nào có ID '{config.POINT_ENTITY_ID}'.")
+        else:
+             self.spawn_new_point() # Spawn điểm đầu tiên
+
     def _find_spawn_points(self, entity_data):
         """Tìm tất cả các vị trí có thể spawn điểm dựa trên entity_data."""
         for r, row in enumerate(entity_data):

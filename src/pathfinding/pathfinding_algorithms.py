@@ -21,33 +21,40 @@ class PathfindingAlgorithms:
             # print(f"Lỗi heuristic TypeError: Đầu vào không phải số. a: {a}, b: {b}") # Gỡ lỗi nếu cần
             return float('inf')
 
-
     @staticmethod
     def a_star(grid, start, goal):
         visited_cnt = 0
         rows, cols = len(grid), len(grid[0])
-        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)] # Lên, Xuống, Trái, Phải
-        
-        open_set = [(0 + PathfindingAlgorithms.heuristic(start, goal), PathfindingAlgorithms.heuristic(start, goal), start)] # (f_score, h_score, node) - h_score để phá vỡ sự bằng nhau
-        came_from = {}
-        g_score = {node: float('inf') for r in grid for node_idx, node_val in enumerate(r) for node in [(grid.index(r), node_idx)]} # Khởi tạo tất cả node với g_score vô cùng
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+        # Khởi tạo g_score an toàn hơn
+        g_score = {}
+        for r in range(rows):
+            for c in range(cols):
+                g_score[(r, c)] = float('inf')
         g_score[start] = 0
+
+        # Khởi tạo f_score (chỉ cần cho điểm bắt đầu để đưa vào open_set)
+        # f_score của các nút khác sẽ được tính khi cần
+        start_h = PathfindingAlgorithms.heuristic(start, goal)
+        open_set = [(g_score[start] + start_h, start_h, start)] # (f_score, h_score, node)
         
-        # f_score = {node: float('inf') for r in grid for node_idx, node_val in enumerate(r) for node in [(grid.index(r), node_idx)]}
-        # f_score[start] = PathfindingAlgorithms.heuristic(start, goal)
-
-        # Set để theo dõi các nút đã được thêm vào open_set nhưng chưa được xử lý
-        # Điều này giúp tránh việc thêm cùng một nút nhiều lần vào open_set với các g_score khác nhau
-        # và cũng giúp tránh kiểm tra closed_set một cách không cần thiết.
-        open_set_hash = {start}
-
+        came_from = {}
+        open_set_hash = {start} # Theo dõi các nút trong open_set để tránh trùng lặp
 
         while open_set:
-            current_f_score, _, current = heapq.heappop(open_set)
-            
-            if current == goal:
+            current_f, current_h, current_node = heapq.heappop(open_set) # Sửa lại tên biến ở đây
+
+            # Nếu f_score hiện tại lớn hơn g_score đã biết + heuristic (tức là có đường tốt hơn đã được xử lý)
+            # hoặc nếu g_score của current_node đã tốt hơn giá trị hiện tại (do có thể có nhiều entry cho cùng 1 node trong heap)
+            # Điều này giúp bỏ qua các đường đi đã lỗi thời đến current_node
+            if current_f > g_score[current_node] + current_h : # current_h là heuristic(current_node, goal)
+                 continue
+
+
+            if current_node == goal: # Đổi current thành current_node
                 path = []
-                temp = current
+                temp = current_node # Đổi current thành current_node
                 while temp in came_from:
                     path.append(temp)
                     temp = came_from[temp]
@@ -55,31 +62,32 @@ class PathfindingAlgorithms:
                 path.reverse()
                 return path, visited_cnt
 
-            open_set_hash.remove(current) # Xóa khỏi hash khi lấy ra xử lý
-            visited_cnt +=1 # Tăng biến đếm khi một nút được "mở rộng"
+            # Không cần remove khỏi open_set_hash ở đây nữa nếu dùng cách kiểm tra f_score ở trên
+            # if current_node in open_set_hash:
+            #    open_set_hash.remove(current_node)
+            
+            visited_cnt +=1
 
             for dr, dc in directions:
-                neighbor = (current[0] + dr, current[1] + dc)
+                neighbor = (current_node[0] + dr, current_node[1] + dc) # Đổi current thành current_node
 
-                if (0 <= neighbor[0] < rows and 0 <= neighbor[1] < cols and grid[neighbor[0]][neighbor[1]] == 0):
-                    tentative_g_score = g_score[current] + 1 # Chi phí từ current đến neighbor là 1
+                if (0 <= neighbor[0] < rows and
+                    0 <= neighbor[1] < cols and
+                    grid[neighbor[0]][neighbor[1]] == 0): # Ô đi được
+                    
+                    tentative_g_score = g_score[current_node] + 1 # Đổi current thành current_node
 
                     if tentative_g_score < g_score[neighbor]:
-                        came_from[neighbor] = current
+                        came_from[neighbor] = current_node # Đổi current thành current_node
                         g_score[neighbor] = tentative_g_score
-                        h_val = PathfindingAlgorithms.heuristic(neighbor, goal)
-                        f_val = tentative_g_score + h_val
+                        neighbor_h = PathfindingAlgorithms.heuristic(neighbor, goal)
+                        neighbor_f = tentative_g_score + neighbor_h
                         
-                        if neighbor not in open_set_hash:
-                            heapq.heappush(open_set, (f_val, h_val, neighbor))
-                            open_set_hash.add(neighbor)
-                        # else: # Nếu neighbor đã có trong open_set, cập nhật priority nếu cần
-                              # heapq không hỗ trợ decrease-key trực tiếp, cách đơn giản là thêm lại với priority mới
-                              # tuy nhiên, việc kiểm tra `tentative_g_score < g_score[neighbor]` đã đảm bảo
-                              # chúng ta chỉ xem xét đường đi tốt hơn.
-                              # Nếu muốn tối ưu hơn, cần một cấu trúc dữ liệu open_set phức tạp hơn.
-                              # Với grid đơn giản này, việc thêm lại có thể chấp nhận được.
-        return [], visited_cnt # Không tìm thấy đường
+                        heapq.heappush(open_set, (neighbor_f, neighbor_h, neighbor))
+                        # open_set_hash.add(neighbor) # Không cần thiết nếu kiểm tra f_score ở trên
+                                                    # hoặc nếu bạn muốn tránh thêm nhiều lần, bạn có thể giữ lại
+                                                    # nhưng logic kiểm tra f_score khi pop thường hiệu quả hơn
+        return [], visited_cnt
 
     @staticmethod
     def dijkstra(grid, start, goal):

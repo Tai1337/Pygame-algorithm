@@ -1,31 +1,34 @@
 # src/core/player.py
 import pygame
-import os # Cần thiết cho os.path.join
+import os
 import src.config as config
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, speed=config.PLAYER_DEFAULT_SPEED): # image_path_base được lấy từ config
+    def __init__(self, x, y, speed=config.PLAYER_DEFAULT_SPEED):
         super().__init__()
-        self.load_images(config.PLAYER_IMAGE_BASE_PATH) # Sử dụng đường dẫn từ config
+        self.load_images(config.PLAYER_IMAGE_BASE_PATH)
         self.image = self.images['idle']
         self.rect = self.image.get_rect()
-        self.x = float(x) # Lưu trữ tọa độ chính xác hơn
+        self.x = float(x)
         self.y = float(y)
         self.rect.topleft = (round(self.x), round(self.y))
         self.speed = speed
-        self.actions = [] # Danh sách các hành động 'W', 'A', 'S', 'D' cho di chuyển tự động
-        self.target_path_nodes = [] # Danh sách các node (ô) trên đường đi tự động
+        self.actions = []
+        self.target_path_nodes = []
         self.action_index = 0
-        self.move_progress = 0 # Theo dõi tiến trình di chuyển đến ô tiếp theo
-        self.current_dx_normalized = 0 # Hướng di chuyển chuẩn hóa hiện tại (cho tự động)
+        self.move_progress = 0
+        self.current_dx_normalized = 0
         self.current_dy_normalized = 0
         self.money = config.INITIAL_PLAYER_MONEY
-        self.facing_direction = 'down' 
+        self.facing_direction = 'down'
         self.animation_timer = 0
-        self.animation_speed = 0.2  # Tốc độ chuyển ảnh (giây)
+        self.animation_speed = 0.2
+
+        # THÊM DÒNG NÀY: Khởi tạo bộ đếm số món hàng đã thu thập
+        self.items_collected_count = 0
 
     def load_images(self, image_path_base_dir):
-        """Tải tất cả các ảnh của người chơi từ thư mục cơ sở được cung cấp."""
+        # ... (Nội dung hàm load_images giữ nguyên như bạn đã có) ...
         self.images = {}
         try:
             self.images['down'] = pygame.image.load(os.path.join(image_path_base_dir, "s.png")).convert_alpha()
@@ -40,7 +43,9 @@ class Player(pygame.sprite.Sprite):
         except FileNotFoundError as e:
             raise FileNotFoundError(f"Lỗi: Không tìm thấy file ảnh người chơi trong '{image_path_base_dir}': {e}")
 
+
     def set_actions(self, actions, path_nodes=None):
+        # ... (Giữ nguyên) ...
         self.actions = actions
         self.target_path_nodes = path_nodes if path_nodes else []
         self.action_index = 0
@@ -51,12 +56,14 @@ class Player(pygame.sprite.Sprite):
             self.target_path_nodes = []
 
     def add_money(self, amount):
+        # ... (Giữ nguyên) ...
         if amount < 0:
             print("Cảnh báo: Không thể cộng số tiền âm.")
             return
         self.money += amount
 
     def spend_money(self, amount):
+        # ... (Giữ nguyên) ...
         if amount < 0:
             print("Cảnh báo: Không thể tiêu số tiền âm.")
             return False
@@ -64,59 +71,53 @@ class Player(pygame.sprite.Sprite):
             self.money -= amount
             return True
         else:
-            # print(f"Debug: Người chơi không đủ tiền. Cần {amount}, có {self.money}") # Có thể bật lại để debug
             return False
 
+    # THÊM PHƯƠNG THỨC NÀY:
+    def collect_item(self, item_value):
+        """
+        Xử lý khi người chơi thu thập một món hàng/điểm.
+        item_value: Giá trị tiền của món hàng/điểm đó.
+        """
+        self.add_money(item_value) # Cộng tiền
+        self.items_collected_count += 1 # Tăng số lượng hàng đã thu thập
+        print(f"Người chơi đã thu thập món hàng thứ {self.items_collected_count}. Tổng tiền: {self.money}")
+
+
     def move(self, dx_pixel, dy_pixel, collidable_tiles):
-        """Di chuyển người chơi và xử lý va chạm."""
+        # ... (Giữ nguyên) ...
         new_x = self.x + dx_pixel
         new_y = self.y + dy_pixel
-
-        # Lưu vị trí cũ để quay lại nếu va chạm
         old_x, old_y = self.x, self.y
-
-        # Di chuyển theo trục X và kiểm tra va chạm
         temp_rect_x = self.rect.copy()
         temp_rect_x.x = round(new_x)
         collision_x = False
         for tile in collidable_tiles:
             if tile.is_collidable and temp_rect_x.colliderect(tile.rect):
                 collision_x = True
-                if dx_pixel > 0: # Di chuyển sang phải
-                    new_x = tile.rect.left - self.rect.width
-                elif dx_pixel < 0: # Di chuyển sang trái
-                    new_x = tile.rect.right
-                # Nếu đang di chuyển tự động và va chạm, hủy đường đi
-                if self.actions:
-                    self.set_actions([], None) # Xóa actions và path_nodes
+                if dx_pixel > 0: new_x = tile.rect.left - self.rect.width
+                elif dx_pixel < 0: new_x = tile.rect.right
+                if self.actions: self.set_actions([], None)
                 break
         self.x = new_x
         self.rect.x = round(self.x)
-
-        # Di chuyển theo trục Y và kiểm tra va chạm
-        temp_rect_y = self.rect.copy() # Sử dụng rect đã cập nhật x
+        temp_rect_y = self.rect.copy()
         temp_rect_y.y = round(new_y)
         collision_y = False
         for tile in collidable_tiles:
             if tile.is_collidable and temp_rect_y.colliderect(tile.rect):
                 collision_y = True
-                if dy_pixel > 0: # Di chuyển xuống
-                    new_y = tile.rect.top - self.rect.height
-                elif dy_pixel < 0: # Di chuyển lên
-                    new_y = tile.rect.bottom
-                if self.actions:
-                    self.set_actions([], None) # Xóa actions và path_nodes
+                if dy_pixel > 0: new_y = tile.rect.top - self.rect.height
+                elif dy_pixel < 0: new_y = tile.rect.bottom
+                if self.actions: self.set_actions([], None)
                 break
         self.y = new_y
         self.rect.y = round(self.y)
-        
-        # Trả về True nếu có va chạm, False nếu không
         return collision_x or collision_y
 
-
     def update(self, collidable_tiles, delta_time):
+        # ... (Giữ nguyên logic update di chuyển và animation) ...
         self.animation_timer += delta_time
-
         final_anim_dx = 0
         final_anim_dy = 0
         is_currently_moving = False
@@ -132,14 +133,11 @@ class Player(pygame.sprite.Sprite):
             final_anim_dx = self.current_dx_normalized
             final_anim_dy = self.current_dy_normalized
             is_currently_moving = (final_anim_dx != 0 or final_anim_dy != 0)
-
             move_x_pixel = self.current_dx_normalized * self.speed
             move_y_pixel = self.current_dy_normalized * self.speed
-            
-            # self.move sẽ xử lý va chạm và có thể xóa self.actions
-            collided = self.move(move_x_pixel, move_y_pixel, collidable_tiles)
+            self.move(move_x_pixel, move_y_pixel, collidable_tiles)
 
-            if not self.actions: # Nếu self.actions bị rỗng do va chạm trong self.move()
+            if not self.actions: 
                 self.move_progress = 0
                 self.action_index = 0
                 self.current_dx_normalized = 0
@@ -148,25 +146,18 @@ class Player(pygame.sprite.Sprite):
                 final_anim_dx = 0
                 final_anim_dy = 0
             else:
-                self.move_progress += self.speed # Dựa trên speed thay vì TILE_SIZE / steps
-                
-                # Kiểm tra xem đã đi đủ một ô chưa (TILE_SIZE)
+                self.move_progress += self.speed
                 if self.move_progress >= config.TILE_SIZE:
-                    # Căn chỉnh vị trí người chơi vào đúng ô lưới sau khi di chuyển
-                    if self.target_path_nodes and self.action_index < len(self.target_path_nodes) -1: # -1 vì action_index trỏ đến action *sắp tới*
-                        # target_path_nodes[0] là điểm bắt đầu, target_path_nodes[1] là đích của action đầu tiên
-                        # Khi hoàn thành action thứ action_index, người chơi nên ở target_path_nodes[action_index + 1]
+                    if self.target_path_nodes and self.action_index < len(self.target_path_nodes) -1:
                         target_node_coords = self.target_path_nodes[self.action_index + 1]
                         self.x = float(target_node_coords[1] * config.TILE_SIZE)
                         self.y = float(target_node_coords[0] * config.TILE_SIZE)
                         self.rect.x = round(self.x)
                         self.rect.y = round(self.y)
-                    
-                    self.move_progress = 0 # Reset progress cho hành động tiếp theo
+                    self.move_progress = 0
                     self.action_index += 1
-
-                    if self.action_index >= len(self.actions): # Hoàn thành tất cả actions
-                        self.set_actions([], None) # Reset hoàn toàn
+                    if self.action_index >= len(self.actions):
+                        self.set_actions([], None)
                         is_currently_moving = False
                         final_anim_dx = 0
                         final_anim_dy = 0
@@ -206,5 +197,7 @@ class Player(pygame.sprite.Sprite):
         if self.animation_timer >= self.animation_speed * 2:
             self.animation_timer = 0
 
+
     def draw(self, surface, camera):
+        # ... (Giữ nguyên) ...
         surface.blit(self.image, camera.apply(self))
