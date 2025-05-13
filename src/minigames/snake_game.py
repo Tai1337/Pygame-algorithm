@@ -24,7 +24,7 @@ class SnakeGame(BaseMiniGame):
         self.game_surface = pygame.Surface((self.game_area_pixel_width, self.game_area_pixel_height))
 
         try:
-            self.score_font = pygame.font.Font(None, 30) 
+            self.score_font = pygame.font.Font(config.DEFAULT_FONT_PATH, 30) 
         except pygame.error as e:
             print(f"Lỗi font cho Snake game: {e}")
             self.score_font = pygame.font.SysFont(None, 30)

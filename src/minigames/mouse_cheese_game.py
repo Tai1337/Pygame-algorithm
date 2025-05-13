@@ -25,7 +25,7 @@ class MouseCheeseGame(BaseMiniGame):
         self.game_surface = pygame.Surface((self.game_area_pixel_width, self.game_area_pixel_height))
         
         try:
-            self.status_font = pygame.font.Font(None, config.MAZE_FONT_SIZE)
+            self.status_font = pygame.font.Font(config.DEFAULT_FONT_PATH, config.MAZE_FONT_SIZE)
         except pygame.error as e:
             self.status_font = pygame.font.SysFont(None, config.MAZE_FONT_SIZE)
 
@@ -247,7 +247,7 @@ class MouseCheeseGame(BaseMiniGame):
             pygame.draw.lines(surface_to_draw_on, color, False, path_pixel_points, width)
 
     def _draw_status_text_on_surface(self, surface_to_draw_on):
-        y_offset = 10
+        y_offset = -500
         line_height = config.MAZE_FONT_SIZE + 2
         texts_to_draw = [
             f"Bước đi: {self.steps}",
@@ -257,7 +257,7 @@ class MouseCheeseGame(BaseMiniGame):
         if self.is_active and not self.won:
             texts_to_draw.append("AI đang tìm phô mai...")
         for i, text_line in enumerate(texts_to_draw):
-            img = self.status_font.render(text_line, True, config.WHITE)
+            img = self.status_font.render(text_line, True, config.BLACK)
             surface_to_draw_on.blit(img, (10, y_offset + i * line_height))
 
     def draw(self, surface, main_game_time_remaining):

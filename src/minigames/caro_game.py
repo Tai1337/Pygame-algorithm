@@ -26,7 +26,7 @@ class CaroGame(BaseMiniGame):
         )
 
         try:
-            self.mark_font = pygame.font.Font(None, config.CARO_FONT_SIZE) 
+            self.mark_font = pygame.font.Font(config.DEFAULT_FONT_PATH, config.CARO_FONT_SIZE) 
         except pygame.error as e:
             print(f"Lỗi khởi tạo font cho Caro: {e}. Sử dụng font hệ thống.")
             self.mark_font = pygame.font.SysFont(None, config.CARO_FONT_SIZE)
@@ -198,7 +198,6 @@ class CaroGame(BaseMiniGame):
 
     def ai_take_turn(self):
         if not self.is_active : return 
-
         print(f"AI ({self.ai_difficulty}) is thinking...")
         pygame.event.pump() 
 

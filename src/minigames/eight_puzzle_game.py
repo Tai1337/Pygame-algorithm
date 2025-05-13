@@ -12,8 +12,8 @@ class EightPuzzleGame(BaseMiniGame):
         super().__init__(screen_width, screen_height, ui_manager)
         
         try:
-            self.tile_font = pygame.font.Font(None, 50)
-            self.message_font = pygame.font.Font(None, 36) 
+            self.tile_font = pygame.font.Font(config.DEFAULT_FONT_PATH, 20)
+            self.message_font = pygame.font.Font(config.DEFAULT_FONT_PATH, 20) 
         except pygame.error as e:
             self.tile_font = pygame.font.SysFont(None, 50)
             self.message_font = pygame.font.SysFont(None, 36)
@@ -171,7 +171,6 @@ class EightPuzzleGame(BaseMiniGame):
         while open_set:
             nodes_explored_count += 1
             if nodes_explored_count > max_nodes_to_explore:
-                print(f"UCS reached exploration limit of {max_nodes_to_explore} nodes.")
                 return None
             g, current_board_tuple = heapq.heappop(open_set)
             if current_board_tuple == goal_board_tuple:
@@ -196,13 +195,10 @@ class EightPuzzleGame(BaseMiniGame):
                         visited_states.add(neighbor_board_tuple)
                         came_from[neighbor_board_tuple] = current_board_tuple
                         heapq.heappush(open_set, (g + 1, neighbor_board_tuple))
-        print("UCS could not find a solution.")
         return None
     
     def attempt_ai_solve(self):
         if self.won or self.solved_by_ai or self.is_ai_solving_step_by_step: return
-
-        print("Attempting AI solve with UCS...")
         solution_states = self._solve_puzzle_with_ucs() 
         if solution_states and len(solution_states) > 0:
             self.ai_solution_path_states = solution_states
@@ -210,7 +206,7 @@ class EightPuzzleGame(BaseMiniGame):
             self.ai_step_timer = 0.0
             self.is_ai_solving_step_by_step = True
             self.solved_by_ai = True 
-            self.display_message = "AI đang giải..." 
+            self.display_message = "Game tự động giải..." 
             self.display_message_timer = float('inf') 
             if self.solve_ai_button and self.solve_ai_button.alive(): self.solve_ai_button.disable()
         else:
@@ -274,7 +270,6 @@ class EightPuzzleGame(BaseMiniGame):
                     
                     self.display_message = config.AI_SOLVED_DEDUCTION_MESSAGE.format(cost=config.PUZZLE_SOLVE_COST)
                     self.display_message_timer = 4 
-                    print("AI finished. Message: ", self.display_message)
                     return True 
             return False 
         

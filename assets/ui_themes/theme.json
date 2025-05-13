@@ -64,6 +64,46 @@
     "#status_info_panel UIImage": {
     "misc":{
         "padding": "2,2" 
+    },
+    "defaults": {
+        "font": {
+            "name": "default_gui_font", 
+            "size": "20",            
+            "regular_path": "assets/fonts/Roboto-Regular.ttf" 
+        },
+        "colours": { 
+            "normal_text": "#FFFFFF",
+            "hovered_text": "#EEEEEE",
+            "disabled_text": "#A0A0A0",
+            "selected_text": "#FFFFFF",
+            "active_text": "#FFFFFF",
+            "normal_text_shadow": "#00000080", 
+            "hovered_text_shadow":"#00000080"
+        },
+        "misc": {
+            "text_shadow": "1", 
+            "text_shadow_size": "1",
+            "text_shadow_offset": "1,1"
+        }
+    },
+    "#status_message": {
+        "font": {
+  
+            "size": "24" 
+            
+        },
+        "colours":{
+            "normal_text":"#FF0000" 
+        }
+    },
+
+    "#status_info_panel UILabel": {
+         "font": {
+            "size": "18" 
+        },
+        "colours":{
+            "normal_text":"#E0E0E0"
+        }
     }
-}
+    }
 }

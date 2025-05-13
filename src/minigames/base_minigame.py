@@ -11,10 +11,10 @@ class BaseMiniGame:
         self.won = False
 
         try:
-            self.font = pygame.font.Font(None, 36)
-        except pygame.error as e:
-            print(f"Lỗi khởi tạo font cho BaseMiniGame: {e}")
-            self.font = pygame.font.SysFont(None, 36)
+            self.font = pygame.font.Font(config.DEFAULT_FONT_PATH, config.DEFAULT_FONT_SIZE_MEDIUM) 
+        except Exception as e:
+            print(f"Lỗi tải font mặc định trong BaseMiniGame: {e}. Dùng SysFont.")
+            self.font = pygame.font.SysFont("arial", config.DEFAULT_FONT_SIZE_MEDIUM) 
 
     def start_game(self):
         self.is_active = True

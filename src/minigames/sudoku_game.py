@@ -15,10 +15,10 @@ class SudokuGame(BaseMiniGame):
         self.time_remaining = self.time_limit
 
         try:
-            self.font_cell = pygame.font.Font(None, int(self.cell_size * 0.7))
-            self.font_button = pygame.font.Font(None, 24)
-            self.font_message = pygame.font.Font(None, 20)
-            self.font_timer = pygame.font.Font(None, 20) 
+            self.font_cell = pygame.font.Font(config.DEFAULT_FONT_PATH, int(self.cell_size * 0.7))
+            self.font_button = pygame.font.Font(config.DEFAULT_FONT_PATH, 24)
+            self.font_message = pygame.font.Font(config.DEFAULT_FONT_PATH, 20)
+            self.font_timer = pygame.font.Font(config.DEFAULT_FONT_PATH, 20) 
         except pygame.error:
             self.font_cell = pygame.font.SysFont("Consolas", int(self.cell_size * 0.7), bold=True)
             self.font_button = pygame.font.SysFont("Arial", 24)

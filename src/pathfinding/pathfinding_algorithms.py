@@ -39,7 +39,6 @@ class PathfindingAlgorithms:
             if current_f > g_score[current_node] + current_h : 
                  continue
 
-
             if current_node == goal: 
                 path = []
                 temp = current_node 
