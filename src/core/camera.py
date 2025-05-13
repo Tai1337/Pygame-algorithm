@@ -1,4 +1,4 @@
-# src/core/camera.py
+
 import pygame
 import src.config as config
 
@@ -21,18 +21,17 @@ class Camera:
         x = -target_entity.rect.centerx + config.SCREEN_WIDTH // 2
         y = -target_entity.rect.centery + config.SCREEN_HEIGHT // 2
 
-        # Giới hạn camera không đi ra ngoài thế giới game
-        x = min(0, x)  # Không cho cuộn qua trái của thế giới
-        y = min(0, y)  # Không cho cuộn qua trên của thế giới
+        x = min(0, x)  
+        y = min(0, y)  
 
         if self.world_width >= config.SCREEN_WIDTH:
-            x = max(-(self.world_width - config.SCREEN_WIDTH), x) # Không cho cuộn qua phải
+            x = max(-(self.world_width - config.SCREEN_WIDTH), x) 
         else:
-            x = 0 # Camera không di chuyển nếu thế giới hẹp hơn màn hình
+            x = 0 
 
         if self.world_height >= config.SCREEN_HEIGHT:
-            y = max(-(self.world_height - config.SCREEN_HEIGHT), y) # Không cho cuộn qua dưới
+            y = max(-(self.world_height - config.SCREEN_HEIGHT), y) 
         else:
-            y = 0 # Camera không di chuyển nếu thế giới thấp hơn màn hình
+            y = 0 
 
         self.camera_rect.topleft = (round(-x), round(-y))

@@ -1,24 +1,18 @@
-# src/pathfinding/pathfinding_algorithms.py
-
 import heapq
 from math import sqrt
 from collections import deque
-# Import QLearningAgent từ cùng package pathfinding
 import numpy as np
-import src.config as config # Import config
+import src.config as config 
 
 class PathfindingAlgorithms:
     @staticmethod
     def heuristic(a, b):
-        # Kiểm tra đầu vào cơ bản
         if not (isinstance(a, (list, tuple)) and len(a) == 2 and 
                 isinstance(b, (list, tuple)) and len(b) == 2):
-            # print(f"Lỗi heuristic: Đầu vào không hợp lệ. a: {a}, b: {b}") # Gỡ lỗi nếu cần
-            return float('inf') # Trả về giá trị lớn nếu đầu vào không hợp lệ
+            return float('inf') 
         try:
             return sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
-        except TypeError: # Bắt lỗi nếu a[0], a[1], b[0], b[1] không phải là số
-            # print(f"Lỗi heuristic TypeError: Đầu vào không phải số. a: {a}, b: {b}") # Gỡ lỗi nếu cần
+        except TypeError: 
             return float('inf')
 
     @staticmethod
@@ -27,34 +21,28 @@ class PathfindingAlgorithms:
         rows, cols = len(grid), len(grid[0])
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
-        # Khởi tạo g_score an toàn hơn
         g_score = {}
         for r in range(rows):
             for c in range(cols):
                 g_score[(r, c)] = float('inf')
         g_score[start] = 0
 
-        # Khởi tạo f_score (chỉ cần cho điểm bắt đầu để đưa vào open_set)
-        # f_score của các nút khác sẽ được tính khi cần
         start_h = PathfindingAlgorithms.heuristic(start, goal)
-        open_set = [(g_score[start] + start_h, start_h, start)] # (f_score, h_score, node)
+        open_set = [(g_score[start] + start_h, start_h, start)] 
         
         came_from = {}
-        open_set_hash = {start} # Theo dõi các nút trong open_set để tránh trùng lặp
+        open_set_hash = {start} 
 
         while open_set:
-            current_f, current_h, current_node = heapq.heappop(open_set) # Sửa lại tên biến ở đây
+            current_f, current_h, current_node = heapq.heappop(open_set) 
 
-            # Nếu f_score hiện tại lớn hơn g_score đã biết + heuristic (tức là có đường tốt hơn đã được xử lý)
-            # hoặc nếu g_score của current_node đã tốt hơn giá trị hiện tại (do có thể có nhiều entry cho cùng 1 node trong heap)
-            # Điều này giúp bỏ qua các đường đi đã lỗi thời đến current_node
-            if current_f > g_score[current_node] + current_h : # current_h là heuristic(current_node, goal)
+            if current_f > g_score[current_node] + current_h : 
                  continue
 
 
-            if current_node == goal: # Đổi current thành current_node
+            if current_node == goal: 
                 path = []
-                temp = current_node # Đổi current thành current_node
+                temp = current_node 
                 while temp in came_from:
                     path.append(temp)
                     temp = came_from[temp]
@@ -62,31 +50,24 @@ class PathfindingAlgorithms:
                 path.reverse()
                 return path, visited_cnt
 
-            # Không cần remove khỏi open_set_hash ở đây nữa nếu dùng cách kiểm tra f_score ở trên
-            # if current_node in open_set_hash:
-            #    open_set_hash.remove(current_node)
-            
             visited_cnt +=1
 
             for dr, dc in directions:
-                neighbor = (current_node[0] + dr, current_node[1] + dc) # Đổi current thành current_node
+                neighbor = (current_node[0] + dr, current_node[1] + dc) 
 
                 if (0 <= neighbor[0] < rows and
                     0 <= neighbor[1] < cols and
-                    grid[neighbor[0]][neighbor[1]] == 0): # Ô đi được
+                    grid[neighbor[0]][neighbor[1]] == 0): 
                     
-                    tentative_g_score = g_score[current_node] + 1 # Đổi current thành current_node
+                    tentative_g_score = g_score[current_node] + 1 
 
                     if tentative_g_score < g_score[neighbor]:
-                        came_from[neighbor] = current_node # Đổi current thành current_node
+                        came_from[neighbor] = current_node 
                         g_score[neighbor] = tentative_g_score
                         neighbor_h = PathfindingAlgorithms.heuristic(neighbor, goal)
                         neighbor_f = tentative_g_score + neighbor_h
                         
                         heapq.heappush(open_set, (neighbor_f, neighbor_h, neighbor))
-                        # open_set_hash.add(neighbor) # Không cần thiết nếu kiểm tra f_score ở trên
-                                                    # hoặc nếu bạn muốn tránh thêm nhiều lần, bạn có thể giữ lại
-                                                    # nhưng logic kiểm tra f_score khi pop thường hiệu quả hơn
         return [], visited_cnt
 
     @staticmethod
@@ -98,7 +79,7 @@ class PathfindingAlgorithms:
         distance = {node: float('inf') for r_idx, r in enumerate(grid) for c_idx, _ in enumerate(r) for node in [(r_idx, c_idx)]}
         distance[start] = 0
         
-        queue = [(0, start)] # (dist, node)
+        queue = [(0, start)] 
         came_from = {}
         
         processed_nodes = set() 
@@ -125,10 +106,10 @@ class PathfindingAlgorithms:
                 neighbor = (current[0] + dr, current[1] + dc)
                 if (0 <= neighbor[0] < rows and
                     0 <= neighbor[1] < cols and
-                    grid[neighbor[0]][neighbor[1]] == 0): # Ô đi được
+                    grid[neighbor[0]][neighbor[1]] == 0): 
                     
-                    new_dist = dist + 1 # Chi phí di chuyển là 1
-                    if new_dist < distance[neighbor]: # Nếu tìm thấy đường ngắn hơn đến neighbor
+                    new_dist = dist + 1 
+                    if new_dist < distance[neighbor]: 
                         distance[neighbor] = new_dist
                         came_from[neighbor] = current
                         heapq.heappush(queue, (new_dist, neighbor))
@@ -140,12 +121,12 @@ class PathfindingAlgorithms:
         rows, cols = len(grid), len(grid[0])
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         queue = deque([start])
-        visited = {start} # Chỉ cần set visited là đủ, không cần closed_set riêng
+        visited = {start} 
         came_from = {}
 
         while queue:
             current = queue.popleft()
-            visited_cnt += 1 # Tăng khi một nút được lấy ra khỏi queue để xử lý
+            visited_cnt += 1 
 
             if current == goal:
                 path = []
@@ -174,14 +155,13 @@ class PathfindingAlgorithms:
         rows, cols = len(grid), len(grid[0])
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         
-        # Priority queue lưu (heuristic_value, node)
         open_set = [(PathfindingAlgorithms.heuristic(start, goal), start)]
         came_from = {}
-        visited_nodes = {start} # Để tránh thêm lại vào open_set và xử lý lặp
+        visited_nodes = {start} 
 
         while open_set:
             _, current = heapq.heappop(open_set)
-            visited_cnt +=1 # Đếm nút được pop ra để mở rộng
+            visited_cnt +=1 
 
             if current == goal:
                 path = []
@@ -198,8 +178,8 @@ class PathfindingAlgorithms:
                 if (0 <= neighbor[0] < rows and
                     0 <= neighbor[1] < cols and
                     grid[neighbor[0]][neighbor[1]] == 0 and
-                    neighbor not in visited_nodes): # Chỉ thêm nếu chưa từng thêm vào open_set/visited
-                        visited_nodes.add(neighbor) # Đánh dấu đã xem xét để thêm vào hàng đợi
+                    neighbor not in visited_nodes): 
+                        visited_nodes.add(neighbor) 
                         came_from[neighbor] = current
                         priority = PathfindingAlgorithms.heuristic(neighbor, goal)
                         heapq.heappush(open_set, (priority, neighbor))
@@ -213,14 +193,10 @@ class PathfindingAlgorithms:
         if not (isinstance(start, (list, tuple)) and len(start) == 2):
             return [], 0
         
-        # current_beam: list của (heuristic_value, path)
         current_beam = [(PathfindingAlgorithms.heuristic(start, goal), [start])]
         
-        # Set để theo dõi các nút đã được mở rộng (expanded) để tính visited_cnt chính xác
         expanded_nodes_for_count = set()
 
-        # Giới hạn số lần lặp để tránh vòng lặp vô hạn (ví dụ, nếu goal không thể đạt được)
-        # Một giới hạn hợp lý có thể là số ô trên bản đồ
         for _iteration_count in range(rows * cols): 
             potential_next_candidates = []
 
@@ -233,7 +209,6 @@ class PathfindingAlgorithms:
                 if not (isinstance(current_node, (list, tuple)) and len(current_node) == 2):
                     continue 
 
-                # Đếm nút được mở rộng (lấy ra từ beam để tạo các nút con)
                 if current_node not in expanded_nodes_for_count:
                     expanded_nodes_for_count.add(current_node)
 
@@ -247,8 +222,6 @@ class PathfindingAlgorithms:
                     if (0 <= neighbor_r < rows and
                         0 <= neighbor_c < cols and
                         grid[neighbor_r][neighbor_c] == 0):
-                        # Tránh đi ngược lại ngay trong path hiện tại để tránh vòng lặp nhỏ đơn giản
-                        # Một cách kiểm tra tốt hơn là không thêm neighbor nếu nó đã nằm trong path hiện tại.
                         if neighbor in path: 
                             continue
                         
@@ -256,11 +229,10 @@ class PathfindingAlgorithms:
                         heuristic_val = PathfindingAlgorithms.heuristic(neighbor, goal)
                         potential_next_candidates.append((heuristic_val, new_path))
             
-            if not potential_next_candidates: # Không có ứng viên nào được tạo ra
+            if not potential_next_candidates: 
                 return [], len(expanded_nodes_for_count)
 
-            # Sắp xếp tất cả các ứng viên và chọn ra top 'beam_width'
-            potential_next_candidates.sort(key=lambda x: x[0]) # Sắp xếp theo heuristic
+            potential_next_candidates.sort(key=lambda x: x[0]) 
             current_beam = potential_next_candidates[:beam_width]
         
         return [], len(expanded_nodes_for_count)
@@ -268,7 +240,6 @@ class PathfindingAlgorithms:
     @staticmethod
     def backtracking_search(grid, start, goal, max_depth_factor=1.5, max_calls_factor=5):
         rows, cols = len(grid), len(grid[0])
-        # Giới hạn dựa trên kích thước bản đồ
         MAX_RECURSION_DEPTH = int(rows * cols * max_depth_factor) 
         MAX_VISITED_CALLS = int(rows * cols * max_calls_factor)    
         
@@ -278,7 +249,7 @@ class PathfindingAlgorithms:
      
         def solve_recursive(current_r, current_c, current_path, current_depth):
             nonlocal _visited_call_count 
-            _visited_call_count += 1 # Đếm mỗi lần gọi hàm đệ quy (mỗi lần "thăm" một ô)
+            _visited_call_count += 1 
 
             if current_depth > MAX_RECURSION_DEPTH:
                 return None 
@@ -290,20 +261,18 @@ class PathfindingAlgorithms:
             if (current_r, current_c) == goal:
                 return list(current_path) 
 
-            # Ưu tiên các hướng (có thể thử nghiệm để xem có cải thiện không)
-            # random.shuffle(directions) # Bỏ nếu muốn thứ tự cố định
             for dr, dc in directions:
                 next_r, next_c = current_r + dr, current_c + dc
 
                 if (0 <= next_r < rows and 0 <= next_c < cols and
                     grid[next_r][next_c] == 0 and
-                    (next_r, next_c) not in current_path): # Không đi lại vào ô đã có trong path hiện tại
+                    (next_r, next_c) not in current_path): 
 
                     found_path = solve_recursive(next_r, next_c, current_path, current_depth + 1) 
                     if found_path:
                         return found_path 
 
-            current_path.pop() # Quay lui: xóa ô hiện tại khỏi đường đi nếu không tìm thấy giải pháp từ đây
+            current_path.pop() 
             return None
 
         final_path = solve_recursive(start[0], start[1], [], 0)
@@ -318,7 +287,7 @@ ALGORITHM_MAP = {
     "Dijkstra": PathfindingAlgorithms.dijkstra,
     "BFS": PathfindingAlgorithms.bfs,
     "Greedy BFS": PathfindingAlgorithms.greedy_bfs,
-    "BEAM_SEARCH": PathfindingAlgorithms.beam_search, # Sẽ dùng beam_width mặc định từ config
+    "BEAM_SEARCH": PathfindingAlgorithms.beam_search, 
     "Backtracking": PathfindingAlgorithms.backtracking_search,
 }
 
@@ -330,5 +299,3 @@ ALGORITHM_INFO = {
     "BEAM_SEARCH": f"Tìm kiếm theo chùm (rộng {config.BEAM_SEARCH_WIDTH_DEFAULT}), giới hạn số nút mở rộng ở mỗi bước. Nhanh, không tối ưu, có thể không tìm thấy đường.",
     "Backtracking": "Tìm kiếm theo chiều sâu, quay lui khi không tìm thấy đường đi. Có thể chậm hơn cho các bài toán lớn.",
 }
-
-# DEFAULT_PATHFINDING_ALGORITHM_NAME đã được chuyển vào config.py

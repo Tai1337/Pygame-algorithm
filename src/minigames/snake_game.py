@@ -17,7 +17,7 @@ class SnakeGame(BaseMiniGame):
 
         self.game_area_rect = pygame.Rect(
             (self.screen_width - self.game_area_pixel_width) // 2,
-            (self.screen_height - self.game_area_pixel_height) // 2 + 20, # Dịch xuống cho thông báo
+            (self.screen_height - self.game_area_pixel_height) // 2 + 20, 
             self.game_area_pixel_width,
             self.game_area_pixel_height
         )
@@ -55,9 +55,9 @@ class SnakeGame(BaseMiniGame):
         for i in range(config.SNAKE_INITIAL_LENGTH):
             self.snake_segments.append((center_x - i, center_y))
         
-        self.score = 0 # Reset điểm số khi va chạm
+        self.score = 0
         
-        self._place_food() # Đặt lại mồi ở vị trí mới
+        self._place_food() 
         self.move_timer = 0.0
 
     def _place_food(self):
@@ -101,8 +101,8 @@ class SnakeGame(BaseMiniGame):
         return False
 
     def update(self, dt):
-        if not self.is_active or self.won: # Nếu game đã thắng hoặc không active (do ESC hoặc main game over)
-            return not self.is_active # Trả về True nếu game đã kết thúc (is_active = False)
+        if not self.is_active or self.won: 
+            return not self.is_active 
 
         self.move_timer += dt
         if self.move_timer >= config.SNAKE_PLAYER_MOVE_INTERVAL:
@@ -114,23 +114,23 @@ class SnakeGame(BaseMiniGame):
             new_head = (head_x + self.direction[0], head_y + self.direction[1])
 
             collided = False
-            # 1. Kiểm tra va chạm tường
+            
             if not (0 <= new_head[0] < self.grid_width and \
                     0 <= new_head[1] < self.grid_height):
                 print("Snake: Hit wall.")
                 collided = True
-            # 2. Kiểm tra va chạm thân
+            
             elif new_head in self.snake_segments: 
                 print("Snake: Hit self.")
                 collided = True
 
             if collided:
                 self.pending_collision_penalty += config.SNAKE_COLLISION_COST
-                self._reset_snake_after_collision() # Reset rắn và điểm
-                # Game không kết thúc ở đây, chỉ bị phạt và reset
-                return False # Báo rằng game chưa kết thúc bởi update này (nhưng có thể có phạt)
+                self._reset_snake_after_collision() 
+                
+                return False 
 
-            # Nếu không va chạm, di chuyển bình thường
+            
             self.snake_segments.insert(0, new_head)
 
             if new_head == self.food_pos:
@@ -139,12 +139,12 @@ class SnakeGame(BaseMiniGame):
                     self.won = True
                     self.is_active = False 
                     print("Snake: Player won the game!")
-                    return True # Báo hiệu thắng
+                    return True 
                 self._place_food()
             else:
                 self.snake_segments.pop() 
         
-        return False # Game vẫn tiếp tục
+        return False 
 
     def draw(self, surface, main_game_time_remaining):
         super().draw(surface, main_game_time_remaining)
@@ -174,6 +174,6 @@ class SnakeGame(BaseMiniGame):
         
         surface.blit(self.game_surface, self.game_area_rect.topleft)
 
-    def cleanup_ui(self): # Thêm hàm này nếu BaseMiniGame yêu cầu, dù Snake không có UI riêng
+    def cleanup_ui(self): 
         super().cleanup_ui()
         pass

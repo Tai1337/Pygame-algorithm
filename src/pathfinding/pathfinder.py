@@ -1,12 +1,9 @@
-# src/pathfinding/pathfinder.py
-
 import pygame
 import pygame_gui
 from pygame_gui.elements import UIButton, UILabel
 import src.config as config
 
 from .pathfinding_algorithms import ALGORITHM_MAP, ALGORITHM_INFO
-# QLearningAgent đã được xóa import
 
 class PathFinder:
     def __init__(self, floor_block_data, ui_manager, player, point_manager):
@@ -66,28 +63,24 @@ class PathFinder:
         col = x // self.tile_size
         return int(row), int(col)
 
-    # THAY ĐỔI HÀM TÍNH GIÁ
     def calculate_taxi_fare(self, path_length, visited_count):
-        if path_length <= 0: # Không tìm thấy đường
+        if path_length <= 0: 
             return float('inf')
         
         num_moves = path_length - 1
-        if num_moves < 0: # Trường hợp path_length = 0 (không nên xảy ra nếu kiểm tra path_length <=0 ở trên)
+        if num_moves < 0: 
             num_moves = 0
 
-        # Công thức tính giá mới
         price = config.TAXI_BASE_FARE + \
                 (visited_count * config.TAXI_COST_PER_VISITED_NODE) + \
                 (num_moves * config.TAXI_COST_PER_MOVE)
         
-        # Áp dụng giá cước tối thiểu nếu tìm thấy đường
-        if path_length > 0 : # path_length = 1 nghĩa là đã ở đích, vẫn tính phí
+        if path_length > 0 : 
              price = max(price, config.TAXI_MIN_FARE_IF_PATH_FOUND)
              
-        return int(round(price)) # Làm tròn đến số nguyên gần nhất
+        return int(round(price)) 
 
     def enable_input(self):
-        # ... (Phần đầu hàm giữ nguyên) ...
         if self.input_active: return
         if not self.point_manager.is_visible or not self.point_manager.current_point_center:
             print("PathFinder: Không có điểm đến, không thể mở UI chọn thuật toán.")
@@ -99,7 +92,7 @@ class PathFinder:
 
         self.title_label = UILabel(
             relative_rect=pygame.Rect((self.screen_width - 400) // 2, 50, 400, 40),
-            text="Chọn Gói Cước Taxi", # Có thể đổi tiêu đề nếu muốn
+            text="Chọn Gói Cước Taxi", 
             manager=self.ui_manager, object_id="#pathfinder_title_label"
         )
         button_width = 420 
@@ -110,7 +103,6 @@ class PathFinder:
         goal_pos_pixels = self.point_manager.current_point_center
 
         if not goal_pos_pixels: 
-            # ... (Xử lý lỗi không có điểm đến, tạo nút Đóng)
             if self.error_label: self.error_label.set_text("Lỗi: Không xác định được điểm đến.")
             self.title_label.set_text("Lỗi: Không có điểm đến cho Taxi")
             cancel_button_rect = pygame.Rect((self.screen_width - button_width) // 2, start_y, button_width, button_height)
@@ -122,7 +114,6 @@ class PathFinder:
 
         if not self._is_valid_position(start_row, start_col) or \
            not self._is_valid_position(goal_row, goal_col):
-            # ... (Xử lý lỗi vị trí không hợp lệ, tạo nút Đóng)
             msg = "Vị trí bắt đầu hoặc kết thúc không hợp lệ cho Taxi."
             self.title_label.set_text("Lỗi Vị Trí Taxi")
             if self.error_label: self.error_label.set_text(msg)
@@ -166,14 +157,12 @@ class PathFinder:
                     current_algo_details['length'] = path_length
                     current_algo_details['path_nodes'] = path_nodes 
                     
-                    # SỬ DỤNG HÀM TÍNH GIÁ MỚI
                     taxi_price = self.calculate_taxi_fare(path_length, visited_count)
                     current_algo_details['price'] = taxi_price
                     
                     num_moves = path_length - 1 if path_length > 0 else 0
                     display_text_suffix = f"Giá: {taxi_price} (Dài: {num_moves}, Duyệt: {visited_count} ô)"
                     is_button_enabled = True
-                # else: display_text_suffix đã được set
             else: 
                 display_text_suffix = "Lỗi cấu hình hàm"
             
@@ -185,7 +174,6 @@ class PathFinder:
                 button.disable()
             self.algorithm_buttons.append(button)
 
-        # ... (Phần tạo nút Hủy và các Label giữ nguyên) ...
         cancel_button_y = start_y + len(self.algorithms) * (button_height + button_spacing)
         cancel_button_rect = pygame.Rect((self.screen_width - button_width) // 2, cancel_button_y, button_width, button_height)
         self.cancel_button = UIButton(relative_rect=cancel_button_rect, text="Hủy", manager=self.ui_manager, object_id="#pathfinder_cancel_button")
@@ -203,7 +191,6 @@ class PathFinder:
 
 
     def disable_input(self):
-        # ... (Giữ nguyên) ...
         self.input_active = False
         for button in self.algorithm_buttons: button.kill()
         self.algorithm_buttons = []
@@ -213,7 +200,6 @@ class PathFinder:
         if self.error_label: self.error_label.kill(); self.error_label = None
 
     def handle_input(self, event, point_manager_param_unused_in_signature_but_self_used):
-        # ... (Giữ nguyên logic, vì nó đọc thông tin từ self.algorithm_details đã được tính toán đúng) ...
         if not self.input_active: return
 
         if event.type == pygame.MOUSEMOTION:
@@ -233,11 +219,10 @@ class PathFinder:
                             num_moves = length - 1 if length > 0 else 0
                             if price != float('inf') and length > 0 :
                                 new_info_text = f"{base_info} | Giá: {price} (Dài: {num_moves}, Duyệt: {visited} ô)"
-                            # Xử lý trường hợp không tìm thấy đường hoặc lỗi từ text của button
                             elif '|' in button.text:
                                 status_from_button = button.text.split('|', 1)[1].strip()
                                 new_info_text = f"{base_info} | {status_from_button}"
-                            else: # Fallback
+                            else: 
                                 new_info_text = f"{base_info} | Không tìm thấy đường (Đã duyệt: {visited} ô)"
 
                         else: new_info_text = base_info
@@ -310,7 +295,6 @@ class PathFinder:
         if not path_nodes_default:
             return [], None, False
 
-        # SỬ DỤNG HÀM TÍNH GIÁ MỚI
         path_length_default = len(path_nodes_default)
         cost_default_taxi = self.calculate_taxi_fare(path_length_default, visited_count_default)
         

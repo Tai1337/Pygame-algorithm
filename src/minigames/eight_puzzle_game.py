@@ -1,4 +1,4 @@
-# src/minigames/eight_puzzle_game.py
+
 import pygame
 import random
 import heapq
@@ -7,8 +7,6 @@ import pygame_gui
 from .base_minigame import BaseMiniGame
 
 class EightPuzzleGame(BaseMiniGame):
-    # ... (__init__, start_game, và các phương thức khác giữ nguyên như phiên bản ở Turn 28) ...
-    # (Đảm bảo các phương thức _board_to_tuple, _solve_puzzle_with_ucs, attempt_ai_solve, etc. đã có)
 
     def __init__(self, screen_width, screen_height, ui_manager):
         super().__init__(screen_width, screen_height, ui_manager)
@@ -119,7 +117,7 @@ class EightPuzzleGame(BaseMiniGame):
         self.is_ai_solving_step_by_step = False
     
     def get_tile_at_mouse_pos(self, mouse_x, mouse_y):
-        # ... (giữ nguyên)
+     
         if not self.puzzle_rect.collidepoint(mouse_x, mouse_y): return None
         local_x = mouse_x - self.puzzle_rect.left - config.PUZZLE_BORDER
         local_y = mouse_y - self.puzzle_rect.top - config.PUZZLE_BORDER
@@ -132,7 +130,6 @@ class EightPuzzleGame(BaseMiniGame):
         return None
 
     def move_tile(self, r, c):
-        # ... (giữ nguyên, nhưng thông báo thắng sẽ là "Bạn đã thắng!")
         if not self.is_active or self.won or self.solved_by_ai or self.is_ai_solving_step_by_step: return
         er, ec = self.empty_pos
         if (abs(r - er) == 1 and c == ec) or (abs(c - ec) == 1 and r == er):
@@ -140,7 +137,7 @@ class EightPuzzleGame(BaseMiniGame):
             self.board[r][c] = 0
             self._find_empty()
             if self.check_win():
-                self.display_message = "Bạn đã thắng!" # Thông báo người chơi tự thắng
+                self.display_message = "Bạn đã thắng!" 
                 self.display_message_timer = 3
                 self.won = True 
                 self.is_active = False 
@@ -149,19 +146,19 @@ class EightPuzzleGame(BaseMiniGame):
     def check_win(self):
         return self.board == self.solved_board
 
-    def _board_to_tuple(self, board_list): # Giữ nguyên
+    def _board_to_tuple(self, board_list): 
         return tuple(tuple(row) for row in board_list)
 
-    def _tuple_to_board(self, board_tuple): # Giữ nguyên
+    def _tuple_to_board(self, board_tuple): 
         return [list(row) for row in board_tuple]
 
-    def _find_empty_in_tuple(self, board_tuple): # Giữ nguyên
+    def _find_empty_in_tuple(self, board_tuple):
         for r_idx, row_val in enumerate(board_tuple):
             for c_idx, tile_val in enumerate(row_val):
                 if tile_val == 0: return r_idx, c_idx
         return None
     
-    def _solve_puzzle_with_ucs(self): # Giữ nguyên logic UCS
+    def _solve_puzzle_with_ucs(self): 
         start_board_tuple = self._board_to_tuple(self.board)
         goal_board_tuple = self._board_to_tuple(self.solved_board)
         if start_board_tuple == goal_board_tuple: return [start_board_tuple]
@@ -213,7 +210,7 @@ class EightPuzzleGame(BaseMiniGame):
             self.ai_step_timer = 0.0
             self.is_ai_solving_step_by_step = True
             self.solved_by_ai = True 
-            self.display_message = "AI đang giải..." # Thông báo ban đầu
+            self.display_message = "AI đang giải..." 
             self.display_message_timer = float('inf') 
             if self.solve_ai_button and self.solve_ai_button.alive(): self.solve_ai_button.disable()
         else:
@@ -223,8 +220,6 @@ class EightPuzzleGame(BaseMiniGame):
             if self.solve_ai_button and self.solve_ai_button.alive(): self.solve_ai_button.enable()
 
     def handle_event(self, event):
-        # ... (logic handle_event như ở Turn 28, đảm bảo nó trả về True khi game kết thúc) ...
-        # Và gọi self.cleanup_ui() trước khi return True từ các trường hợp đóng game
         if super().handle_event(event): 
             self.cleanup_ui()
             return True 
@@ -276,11 +271,11 @@ class EightPuzzleGame(BaseMiniGame):
                     self.is_ai_solving_step_by_step = False
                     self.won = True 
                     self.is_active = False 
-                    # THAY ĐỔI THÔNG BÁO
+                    
                     self.display_message = config.AI_SOLVED_DEDUCTION_MESSAGE.format(cost=config.PUZZLE_SOLVE_COST)
-                    self.display_message_timer = 4 # Hiện thông báo này lâu hơn một chút
+                    self.display_message_timer = 4 
                     print("AI finished. Message: ", self.display_message)
-                    return True # Báo hiệu game kết thúc
+                    return True 
             return False 
         
         if self.display_message_timer > 0 and self.display_message_timer != float('inf'):
@@ -288,7 +283,7 @@ class EightPuzzleGame(BaseMiniGame):
             if self.display_message_timer <= 0:
                 self.display_message = ""
         
-        if self.solve_ai_button and self.solve_ai_button.alive(): # Kiểm tra nút còn tồn tại
+        if self.solve_ai_button and self.solve_ai_button.alive(): 
             if self.won or self.solved_by_ai or self.is_ai_solving_step_by_step:
                 if self.solve_ai_button.is_enabled: self.solve_ai_button.disable()
             else:
@@ -317,20 +312,12 @@ class EightPuzzleGame(BaseMiniGame):
                 else:
                     pygame.draw.rect(puzzle_render_surface, config.BLACK, rect)
         
-        # Hiển thị display_message (thắng bởi người chơi, AI đang giải, AI giải xong, lỗi AI)
         if self.display_message_timer > 0 and self.display_message:
             msg_surf = self.message_font.render(self.display_message, True, config.WHITE)
-            # Đặt thông báo này ở trên cùng của puzzle_render_surface, dưới timer của game chính (nếu có)
-            # Vị trí timer của game chính được vẽ bởi BaseMiniGame.draw_main_game_timer
-            # Giả sử timer game chính cao khoảng 30-40px từ mép trên của vùng minigame (do lớp cha vẽ)
-            # Chúng ta sẽ đặt thông báo này ngay dưới đó, hoặc ở một vị trí cố định khác.
-            # Ví dụ: đặt ở phía trên của puzzle_rect, bên trong khu vực lớp phủ mờ.
             
-            # Tính toán vị trí cho thông báo của 8-puzzle, nằm bên trong puzzle_rect
-            # nhưng phía trên các ô số, và dưới timer của game chính (vẽ bởi BaseMiniGame)
-            msg_y_offset = config.PUZZLE_BORDER + self.font.get_height() + 15 # Khoảng cách từ trên cùng của puzzle_surface
-            if hasattr(super(), 'timer_font') and super().timer_font: # Nếu lớp cha có timer_font
-                 msg_y_offset = config.PUZZLE_BORDER + super().timer_font.get_height() + 20 # Dưới timer của game chính
+            msg_y_offset = config.PUZZLE_BORDER + self.font.get_height() + 15 
+            if hasattr(super(), 'timer_font') and super().timer_font: 
+                 msg_y_offset = config.PUZZLE_BORDER + super().timer_font.get_height() + 20 
 
             msg_rect = msg_surf.get_rect(center=(self.puzzle_width // 2, msg_y_offset))
             puzzle_render_surface.blit(msg_surf, msg_rect)

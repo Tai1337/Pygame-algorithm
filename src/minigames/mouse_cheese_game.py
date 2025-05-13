@@ -60,7 +60,7 @@ class MouseCheeseGame(BaseMiniGame):
         self.display_message = ""
         self.display_message_timer = 0
         self.training_episodes = 0
-        self.move_timer = 0.0  # Bộ đếm thời gian cho di chuyển chuột
+        self.move_timer = 0.0  
         
         self.reset_game_internal_state()
 
@@ -76,7 +76,7 @@ class MouseCheeseGame(BaseMiniGame):
     def start_game(self, training_episodes=0):
         super().start_game()
         self.training_episodes = training_episodes
-        self.move_timer = 0.0  # Reset timer khi bắt đầu game
+        self.move_timer = 0.0  
         if training_episodes > 0:
             self.train_agent(training_episodes)
         self.reset_game_internal_state()
@@ -175,12 +175,11 @@ class MouseCheeseGame(BaseMiniGame):
                     self.display_message = ""
             return not self.is_active
 
-        # Cập nhật timer cho di chuyển chuột
+       
         self.move_timer += dt
         if self.move_timer < config.MAZE_MOUSE_MOVE_INTERVAL:
-            return False  # Chưa đến lúc di chuyển
+            return False  
 
-        # Đủ thời gian, thực hiện di chuyển và reset timer
         self.move_timer = 0.0
 
         current_state = self._get_current_state_tuple()
@@ -188,7 +187,7 @@ class MouseCheeseGame(BaseMiniGame):
         next_state, reward, done = self._perform_ai_action(action)
 
         if done:
-            self.is_active = self.won = self.game_won_internal  # Sửa lỗi cú pháp
+            self.is_active = self.won = self.game_won_internal  
             if self.won:
                 self.display_message = f"AI đã ăn hết {self.score} phô mai!"
                 self.display_message_color = config.GREEN

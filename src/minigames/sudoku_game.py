@@ -18,12 +18,12 @@ class SudokuGame(BaseMiniGame):
             self.font_cell = pygame.font.Font(None, int(self.cell_size * 0.7))
             self.font_button = pygame.font.Font(None, 24)
             self.font_message = pygame.font.Font(None, 20)
-            self.font_timer = pygame.font.Font(None, 20)  # Giảm từ 28 xuống 20
+            self.font_timer = pygame.font.Font(None, 20) 
         except pygame.error:
             self.font_cell = pygame.font.SysFont("Consolas", int(self.cell_size * 0.7), bold=True)
             self.font_button = pygame.font.SysFont("Arial", 24)
             self.font_message = pygame.font.SysFont("Arial", 20)
-            self.font_timer = pygame.font.SysFont("Arial", 20)  # Giảm từ 28 xuống 20
+            self.font_timer = pygame.font.SysFont("Arial", 20) 
 
         self.board_initial = [[0] * self.grid_dimension for _ in range(self.grid_dimension)]
         self.board_current = [[0] * self.grid_dimension for _ in range(self.grid_dimension)]
@@ -322,7 +322,7 @@ class SudokuGame(BaseMiniGame):
 
         timer_text = f"Time: {int(self.time_remaining)}s"
         timer_surface = self.font_timer.render(timer_text, True, config.BLACK)
-        timer_rect = timer_surface.get_rect(center=(self.grid_size // 2, self.grid_size + 90))  # Căn giữa, dưới nút Confirm
+        timer_rect = timer_surface.get_rect(center=(self.grid_size // 2, self.grid_size + 90))  
         puzzle_surface.blit(timer_surface, timer_rect)
 
         surface.blit(puzzle_surface, self.puzzle_rect.topleft)

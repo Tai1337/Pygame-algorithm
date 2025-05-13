@@ -1,4 +1,4 @@
-# src/core/player.py
+
 import pygame
 import os
 import src.config as config
@@ -24,11 +24,11 @@ class Player(pygame.sprite.Sprite):
         self.animation_timer = 0
         self.animation_speed = 0.2
 
-        # THÊM DÒNG NÀY: Khởi tạo bộ đếm số món hàng đã thu thập
+        
         self.items_collected_count = 0
 
     def load_images(self, image_path_base_dir):
-        # ... (Nội dung hàm load_images giữ nguyên như bạn đã có) ...
+       
         self.images = {}
         try:
             self.images['down'] = pygame.image.load(os.path.join(image_path_base_dir, "s.png")).convert_alpha()
@@ -45,7 +45,7 @@ class Player(pygame.sprite.Sprite):
 
 
     def set_actions(self, actions, path_nodes=None):
-        # ... (Giữ nguyên) ...
+       
         self.actions = actions
         self.target_path_nodes = path_nodes if path_nodes else []
         self.action_index = 0
@@ -56,14 +56,14 @@ class Player(pygame.sprite.Sprite):
             self.target_path_nodes = []
 
     def add_money(self, amount):
-        # ... (Giữ nguyên) ...
+        
         if amount < 0:
             print("Cảnh báo: Không thể cộng số tiền âm.")
             return
         self.money += amount
 
     def spend_money(self, amount):
-        # ... (Giữ nguyên) ...
+        
         if amount < 0:
             print("Cảnh báo: Không thể tiêu số tiền âm.")
             return False
@@ -73,19 +73,19 @@ class Player(pygame.sprite.Sprite):
         else:
             return False
 
-    # THÊM PHƯƠNG THỨC NÀY:
+  
     def collect_item(self, item_value):
         """
         Xử lý khi người chơi thu thập một món hàng/điểm.
         item_value: Giá trị tiền của món hàng/điểm đó.
         """
-        self.add_money(item_value) # Cộng tiền
-        self.items_collected_count += 1 # Tăng số lượng hàng đã thu thập
+        self.add_money(item_value) 
+        self.items_collected_count += 1 
         print(f"Người chơi đã thu thập món hàng thứ {self.items_collected_count}. Tổng tiền: {self.money}")
 
 
     def move(self, dx_pixel, dy_pixel, collidable_tiles):
-        # ... (Giữ nguyên) ...
+       
         new_x = self.x + dx_pixel
         new_y = self.y + dy_pixel
         old_x, old_y = self.x, self.y
@@ -116,7 +116,7 @@ class Player(pygame.sprite.Sprite):
         return collision_x or collision_y
 
     def update(self, collidable_tiles, delta_time):
-        # ... (Giữ nguyên logic update di chuyển và animation) ...
+       
         self.animation_timer += delta_time
         final_anim_dx = 0
         final_anim_dy = 0
@@ -199,5 +199,5 @@ class Player(pygame.sprite.Sprite):
 
 
     def draw(self, surface, camera):
-        # ... (Giữ nguyên) ...
+      
         surface.blit(self.image, camera.apply(self))

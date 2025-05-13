@@ -1,4 +1,4 @@
-# src/minigames/base_minigame.py
+
 import pygame
 import src.config as config
 
@@ -46,11 +46,9 @@ class BaseMiniGame:
     def draw(self, surface, main_game_time_remaining):
         """Vẽ các thành phần chung của minigame (lớp phủ mờ)."""
         overlay_surface = pygame.Surface((self.screen_width, self.screen_height), pygame.SRCALPHA)
-        overlay_surface.fill(config.PUZZLE_BG_COLOR) # Sử dụng màu nền từ config
+        overlay_surface.fill(config.PUZZLE_BG_COLOR) 
         surface.blit(overlay_surface, (0, 0))
         
-        # THAY ĐỔI: BỎ HOẶC COMMENT DÒNG DƯỚI ĐÂY ĐỂ KHÔNG VẼ TIMER TRONG MINIGAME NỮA
-        # self.draw_main_game_timer(surface, self.screen_width - 230, 10, main_game_time_remaining)
 
     def get_result(self):
         return self.won

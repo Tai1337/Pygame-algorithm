@@ -29,9 +29,9 @@ BLUE_MSG = (0, 0, 200)
 SELECTED_COLOR = (255, 165, 0)
 BUTTON_COLOR = (100, 180, 100)
 BUTTON_TEXT_COLOR = (0, 0, 0)
-TRY_COLOR = (255, 215, 0)  # Vàng: Số đang thử
-KEEP_COLOR = (0, 200, 0)  # Xanh lá: Số được giữ
-BACKTRACK_COLOR = (255, 69, 0)  # Cam: Số bị xóa khi quay lui
+TRY_COLOR = (255, 215, 0)
+KEEP_COLOR = (0, 200, 0)
+BACKTRACK_COLOR = (255, 69, 0)
 
 MAP_IMAGE_PATH = get_asset_path("images/map.png")
 PLAYER_IMAGE_BASE_PATH = get_asset_path("images/character")
