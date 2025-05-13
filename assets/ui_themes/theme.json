@@ -45,6 +45,25 @@
             "normal_text": "#FFFFFF", 
             "text_shadow_colour": "#000000"
         }
+    },
+    "#status_info_panel": {
+        "colours": {
+            "dark_bg": "#202020A0", 
+            "normal_border": "#808080FF" 
+        },
+        "misc": {
+            "border_width": "1", 
+            "shadow_width": "1"  
+        }
+    },
+    "#status_info_panel UILabel": {
+        "colours": {
+            "normal_text": "#E0E0E0" 
+        }
+    },
+    "#status_info_panel UIImage": {
+    "misc":{
+        "padding": "2,2" 
     }
-    
+}
 }
