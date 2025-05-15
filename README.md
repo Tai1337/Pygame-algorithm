@@ -5,12 +5,7 @@ Chào mừng bạn đến với cuộc phiêu lưu giao hàng 2D đầy hấp d�
 **1. Phiêu Lưu Trong Thế Giới Mở Rộng Lớn:**
 Du hành tự do qua các khu vực được thiết kế tỉ mỉ từ file CSV, thực hiện các nhiệm vụ giao hàng đầy thử thách và quản lý tài chính cá nhân. Mỗi chuyến đi là một khám phá mới!
 ![Thế giới game và giao hàng](gif/1.gif)
-
-**2. "Taxi" AI Dẫn Lối Thông Minh:**
-Bạn cần đến một địa điểm cụ thể mà không muốn tự mình tìm đường? Tính năng "Taxi" sử dụng các thuật toán tìm đường như Backtracking (cùng với A\*, Beam Search) sẽ giúp bạn di chuyển tự động một cách nhanh chóng (có tính một khoản phí nhỏ!).
-![Tìm đường tự động với Backtracking](gif/Backtracking.gif)
-
-**3. Đấu Trí Cùng Chuỗi Mini-Games Đa Dạng:**
+**2. Đấu Trí Cùng Chuỗi Mini-Games Đa Dạng:**
 Không chỉ giao hàng, bạn còn có cơ hội rèn luyện tư duy và tìm hiểu về các thuật toán thông qua các mini-game độc đáo được tích hợp:
 
 * **Rắn Săn Mồi (Snake Game) Kinh Điển:** Điều khiển chú rắn của bạn thu thập mồi, tránh các chướng ngại vật và chính chiếc đuôi dài của mình. Cẩn thận kẻo bị phạt tiền khi va chạm!
@@ -24,7 +19,8 @@ Không chỉ giao hàng, bạn còn có cơ hội rèn luyện tư duy và tìm 
 
 * **Cờ Caro Chiến Thuật (Caro Game):** Thử tài đấu trí cùng AI trong những ván cờ Caro căng thẳng, sử dụng các thuật toán như Minimax để thách thức người chơi.
     ![Mini-game Cờ Caro](gif/caro.gif)
-
+* **Trò chơi sudoku (sudoku Game):** Thử tài giải sudoku cùng với chức năng tự giải bằng AI.
+    ![Tìm đường tự động với Backtracking](gif/Backtracking.gif)
 Hãy sẵn sàng để chinh phục mọi nhiệm vụ giao hàng, khám phá thế giới rộng lớn và vượt qua các thử thách thuật toán thú vị! Chi tiết về các tính năng khác của trò chơi đang chờ bạn ở phần tiếp theo.
 ## Tính năng
 
