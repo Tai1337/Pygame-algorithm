@@ -19,8 +19,10 @@ Không chỉ giao hàng, bạn còn có cơ hội rèn luyện tư duy và tìm 
 
 * **Cờ Caro Chiến Thuật (Caro Game):** Thử tài đấu trí cùng AI trong những ván cờ Caro căng thẳng, sử dụng các thuật toán như Minimax để thách thức người chơi.
     ![Mini-game Cờ Caro](gif/caro.gif)
+  
 * **Trò chơi sudoku (sudoku Game):** Thử tài giải sudoku cùng với chức năng tự giải bằng AI.
     ![Tìm đường tự động với Backtracking](gif/Backtracking.gif)
+  
 Hãy sẵn sàng để chinh phục mọi nhiệm vụ giao hàng, khám phá thế giới rộng lớn và vượt qua các thử thách thuật toán thú vị! Chi tiết về các tính năng khác của trò chơi đang chờ bạn ở phần tiếp theo.
 ## Tính năng
 
